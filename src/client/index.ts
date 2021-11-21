@@ -24,4 +24,6 @@ class ApiClient implements IApiClient {
     (this.axiosInstance.defaults = defaults);
 }
 
+export type { Transaction } from "./transactions";
+export type { TransactionsTypes } from "./transactions";
 export default ApiClient;

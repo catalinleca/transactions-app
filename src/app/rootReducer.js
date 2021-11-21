@@ -1,9 +1,8 @@
 import { combineReducers } from "@reduxjs/toolkit";
-
-// import transactionReducer from "views/transactions/transactionsSlice";
+import transactionReducer from "../views/transactions/transactionsSlice";
 
 const rootReducer = combineReducers({
-  // transactions: transactionReducer
+  transactions: transactionReducer
 });
 
 export default rootReducer;
