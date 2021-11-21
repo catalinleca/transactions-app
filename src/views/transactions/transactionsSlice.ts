@@ -24,8 +24,6 @@ export const fetchTransactions = createAsyncThunk(
 
     const response = await call;
 
-    console.log("response: ", response);
-
     return response.data;
   }
 );
@@ -47,23 +45,23 @@ export const transactionsSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: {
-    [fetchTransactions.pending.type]: (state, action) => {
-      console.log("PENDING current state: ", state);
-      console.log("PENDING current action: ", action);
+    [fetchTransactions.pending.type]: (state) => {
+      if (state.loading) {
+        state.loading = true;
+      }
     },
     [fetchTransactions.fulfilled.type]: (state, action) => {
-      console.log("FULFILLED current state: ", state.loading);
-      console.log("FULFILLED current action: ", action.payload);
-
+      state.loading = false;
       state.transactions = action.payload;
     },
     [fetchTransactions.rejected.type]: (state, action) => {
-      console.log("REJECTED current state: ", state);
-      console.log("REJECTED current action: ", action);
+      state.loading = false;
+      state.error = action.error;
     }
   }
 });
 
-export const selectTransactions = (state: any) => state.transactions;
+export const selectTransactions = (state: any) =>
+  state.transactions.transactions;
 
 export default transactionsSlice.reducer;
