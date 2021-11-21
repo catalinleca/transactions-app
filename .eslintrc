@@ -1,0 +1,9 @@
+{
+  "extends": [
+    "@cl-tools/eslint-config-cl-react",
+  ],
+  "rules": {
+    "no-use-before-define": "off",
+    "react/prop-types": "off"
+  }
+}

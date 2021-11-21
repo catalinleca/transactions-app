@@ -1,0 +1,9 @@
+**/node_modules/**
+**/lib/**
+**/build/**
+
+**/CHANGELOG.md
+.eslintignore
+.prettierignore
+yarn.lock
+.jest-coverage
