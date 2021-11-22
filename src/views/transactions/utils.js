@@ -129,11 +129,8 @@ export const searchRows = (rows, searchObject, columns) => {
         return currentValue.toUpperCase().includes(searchedValue.toUpperCase());
       }
 
-      if (
-        typeof currentValue === "number" &&
-        typeof searchedValue === "number"
-      ) {
-        return currentValue === searchedValue;
+      if (typeof currentValue === "number") {
+        return +currentValue === +searchedValue;
       }
 
       /**
