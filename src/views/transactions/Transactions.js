@@ -1,73 +1,50 @@
 import * as React from "react";
 import { useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchTransactions, selectTransactions } from "./transactionsSlice";
+import {
+  fetchTransactions,
+  selectIsLoading,
+  selectTransactions
+} from "./transactionsSlice";
+import { flattenObj } from "../../utils";
+import { Table } from "../../components/Table";
+import moment from "moment";
 
-const calculateNewCurrencies = (
-  oldCurrencies,
-  { currency: newCurrency, amount: newAmount }
-) => {
-  const finalCurrencies = {
-    ...oldCurrencies
-  };
+const flattenTransactions = (transactions) => {
+  return Object.keys(transactions).map((key) => ({
+    user: key,
+    ...flattenObj(transactions[key])
+  }));
+};
 
-  if (!(newCurrency in oldCurrencies)) {
-    finalCurrencies[newCurrency] = +newAmount;
-  } else {
-    finalCurrencies[newCurrency] = finalCurrencies[newCurrency] + +newAmount;
+const columns = [
+  {
+    key: "user",
+    value: "User"
+  },
+  {
+    key: "GBP",
+    value: "GBP"
+  },
+  {
+    key: "EUR",
+    value: "EUR"
+  },
+  {
+    key: "USD",
+    value: "USD"
+  },
+  {
+    key: "timestamp",
+    value: "Last Transaction",
+    format: (value) => moment(value).format("DD-MM-YYYY, h:mm:ss a")
   }
-
-  return finalCurrencies;
-};
-
-const calculateNewData = (oldUserData, newUserData) => {
-  const oldUserTimestamp = new Date(oldUserData.timestamp);
-  const newUserTimestamp = new Date(newUserData.timestamp);
-  const newTimestamp =
-    oldUserTimestamp > newUserTimestamp ? oldUserTimestamp : newUserTimestamp;
-
-  const newCurrencies = calculateNewCurrencies(
-    oldUserData.currencies,
-    newUserData
-  );
-
-  return {
-    timestamp: newTimestamp,
-    currencies: newCurrencies
-  };
-};
-
-/**
- * Validate when data comes invalid
- */
-const getFinalUsersTransactions = (allTransactions) => {
-  return allTransactions.reduce((acc, currentTransaction) => {
-    const { user_id, timestamp, currency, amount } = currentTransaction;
-
-    debugger;
-    if (!(user_id in acc)) {
-      acc[user_id] = {
-        timestamp,
-        currencies: {
-          [currency]: +amount
-        }
-      };
-    } else {
-      const oldUserData = acc[user_id];
-      acc[user_id] = calculateNewData(oldUserData, {
-        timestamp,
-        currency,
-        amount
-      });
-    }
-
-    return acc;
-  }, {});
-};
+];
 
 export const Transactions = () => {
   const dispatch = useDispatch();
   const allTransactions = useSelector(selectTransactions);
+  const isLoading = useSelector(selectIsLoading);
 
   console.log("in Transaction - data: ", allTransactions);
 
@@ -75,12 +52,18 @@ export const Transactions = () => {
     dispatch(fetchTransactions("large"));
   }, [dispatch]);
 
-  const finalUsersTransactions = useMemo(
-    () => getFinalUsersTransactions(allTransactions),
+  const flatUsersTransactions = useMemo(
+    () => flattenTransactions(allTransactions),
     [allTransactions]
   );
 
-  console.log("finalUsersTransactions: ", finalUsersTransactions);
+  console.log("flatUsersTransactions: ", flatUsersTransactions);
 
-  return <div>Mare div</div>;
+  return !flatUsersTransactions.length ? (
+    <div>Loading</div>
+  ) : (
+    <div>
+      <Table rows={flatUsersTransactions} columns={columns} />
+    </div>
+  );
 };

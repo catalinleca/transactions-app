@@ -1,11 +1,11 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { Transaction, TransactionsTypes } from "../../client";
 import apiClient from "../../app/client";
+import { getFinalUsersTransactions } from "./utils";
 
 export const fetchTransactions = createAsyncThunk(
   "transactions/fetchTransactions",
   async (transactionType: TransactionsTypes) => {
-    console.log("in fetchTransaction: ", transactionType);
     let call;
 
     // usually I would've implemented one function for each type but for the sake
@@ -23,8 +23,10 @@ export const fetchTransactions = createAsyncThunk(
     }
 
     const response = await call;
+    const allTransactions = response.data;
+    const formattedTransactions = getFinalUsersTransactions(allTransactions);
 
-    return response.data;
+    return formattedTransactions;
   }
 );
 
@@ -63,5 +65,7 @@ export const transactionsSlice = createSlice({
 
 export const selectTransactions = (state: any) =>
   state.transactions.transactions;
+
+export const selectIsLoading = (state: any) => state.transactions.loading;
 
 export default transactionsSlice.reducer;
