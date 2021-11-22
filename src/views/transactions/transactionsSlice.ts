@@ -24,9 +24,7 @@ export const fetchTransactions = createAsyncThunk(
 
     const response = await call;
     const allTransactions = response.data;
-    const formattedTransactions = getFinalUsersTransactions(allTransactions);
-
-    return formattedTransactions;
+    return getFinalUsersTransactions(allTransactions);
   }
 );
 
